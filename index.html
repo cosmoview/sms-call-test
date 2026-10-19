@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>문자·전화 연결 테스트</title>
+<style>
+  :root { --bg:#f5f6f8; --card:#fff; --text:#111; --sub:#666; --btn:#3617ce; --btnText:#fff; --btn2:#111; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--text);
+         font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard","Noto Sans KR",sans-serif; }
+  .wrap { max-width:420px; margin:0 auto; padding:48px 16px; }
+  .card { background:var(--card); border-radius:20px; padding:28px 20px; box-shadow:0 4px 20px rgba(0,0,0,.06); text-align:center; }
+  h1 { font-size:20px; margin:0 0 8px; }
+  p { color:var(--sub); font-size:14px; margin:0 0 24px; line-height:1.5; }
+  .num { font-size:26px; font-weight:800; letter-spacing:.5px; margin:0 0 24px; }
+  .btn { display:block; width:100%; padding:16px; border-radius:14px; color:var(--btnText);
+         font-size:17px; font-weight:700; text-decoration:none; }
+  .btn + .btn { margin-top:12px; }
+  .btn.sms { background:var(--btn); }
+  .btn.call { background:var(--btn2); }
+  .debug { margin-top:24px; text-align:left; font-size:12px; color:var(--sub); background:#f0f1f4; border-radius:10px; padding:12px; word-break:break-all; }
+  .debug b { color:var(--text); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>문자·전화 연결 테스트</h1>
+    <p>버튼을 누르면 문자앱 또는 전화앱이 열립니다.<br>내용 확인 후 전송·통화를 눌러주세요.</p>
+    <div class="num" id="numText"></div>
+
+    <a id="smsBtn" class="btn sms" href="#">💬 문자 보내기</a>
+    <a id="callBtn" class="btn call" href="#">📞 전화 걸기</a>
+
+    <div class="debug" id="debug"></div>
+  </div>
+</div>
+
+<script>
+  // ===== 설정 =====
+  // 1순위: 주소 뒤 ?to=번호 로 넣은 번호
+  // 2순위: 아래 DEFAULT_NUMBER (직접 수정)
+  var DEFAULT_NUMBER = "15321000";
+  var MESSAGE = "안녕";
+  // ================
+
+  var params = new URLSearchParams(location.search);
+  var number = (params.get("to") || DEFAULT_NUMBER).replace(/[^0-9+]/g, "");
+  var body = encodeURIComponent(params.get("msg") || MESSAGE);
+
+  var ua = navigator.userAgent;
+  var isIOS = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  var isAndroid = /Android/i.test(ua);
+
+  // 문자: iOS는 &body=, Android는 ?body=
+  var smsLink = isIOS ? "sms:" + number + "&body=" + body
+                      : "sms:" + number + "?body=" + body;
+  // 전화: OS 공용
+  var telLink = "tel:" + number;
+
+  document.getElementById("smsBtn").href = smsLink;
+  document.getElementById("callBtn").href = telLink;
+
+  // 화면 표시용 번호 (8자리 대표번호는 1532-1000 형태)
+  var pretty = number.length === 8 ? number.slice(0,4) + "-" + number.slice(4)
+             : number.length === 11 ? number.slice(0,3) + "-" + number.slice(3,7) + "-" + number.slice(7)
+             : number;
+  document.getElementById("numText").textContent = pretty;
+
+  var os = isIOS ? "iOS" : (isAndroid ? "Android" : "기타(PC 등)");
+  var inApp = /KAKAOTALK|Instagram|FBAN|FBAV|NAVER|Line/i.test(ua) ? "예 (인앱브라우저)" : "아니오";
+
+  document.getElementById("debug").innerHTML =
+    "<b>[테스트 정보]</b><br>" +
+    "OS: " + os + "<br>" +
+    "인앱브라우저: " + inApp + "<br>" +
+    "번호: " + number + "<br>" +
+    "문자 링크: " + smsLink + "<br>" +
+    "전화 링크: " + telLink;
+</script>
+</body>
+</html>
