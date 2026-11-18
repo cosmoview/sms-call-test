@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>1532 문자 열기</title>
+<style>
+:root{--bg:#0E0E10;--card:#1B1B1F;--fg:#F2F2F4;--sub:#A7A7B0;--accent:#7B61FF;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:"Noto Sans KR","Apple SD Gothic Neo",system-ui,sans-serif;
+  padding:32px max(16px,env(safe-area-inset-right,0px)) 32px max(16px,env(safe-area-inset-left,0px))}
+.w{max-width:420px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1{font-size:20px;margin:0}
+p{margin:0;color:var(--sub);font-size:14px;line-height:1.6}
+.box{background:var(--card);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.box small{color:var(--sub);font-size:12px}
+.box b{font-size:17px}
+a.btn{display:block;text-align:center;padding:14px;border-radius:12px;background:var(--accent);color:#fff;font-weight:700;text-decoration:none}
+a.sub{background:transparent;border:1px solid #34343B;color:var(--fg);font-weight:600;font-size:14px;padding:11px}
+</style></head>
+<body><div class="w">
+  <h1>문자앱으로 이동 중…</h1>
+  <p>자동으로 열리지 않으면 아래 버튼을 눌러주세요.</p>
+  <div class="box"><small>받는 사람</small><b>1532-1000</b><small>보낼 문구</small><b id="t"></b></div>
+  <a class="btn" id="go">1532-1000에 문자 보내기</a>
+  <a class="btn sub" id="alt"></a>
+</div>
+<script>
+var MSG={
+  hi:"안녕? 뭐 할 수 있어?",
+  hi2:"안녕? 너 뭐할수 있어?",
+  hi3:"안녕! 너 뭐할수 있어?",
+  hi4:"안녕~ 너 뭐할수 있어?",
+  hi5:"안녕 너 뭐할수 있어?",
+  week:"SKT 모두의 AI 서비스 이름이 뭐야?"
+};
+var q=new URLSearchParams(location.search), k=q.get("k")||location.hash.slice(1);
+var body=MSG[k]||q.get("b")||MSG.hi, e=encodeURIComponent(body);
+var IS_IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
+var ios="sms:15321000&body="+e, and="sms:15321000?&body="+e;
+document.getElementById("t").textContent=body;
+var go=document.getElementById("go"), alt=document.getElementById("alt");
+go.href=IS_IOS?ios:and;
+alt.href=IS_IOS?and:ios;
+alt.textContent=IS_IOS?"안 열리면: Android 형식으로 열기":"안 열리면: iOS 형식으로 열기";
+setTimeout(function(){location.href=go.href;},300);
+</script>
+</body></html>
